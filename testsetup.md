@@ -149,6 +149,53 @@ Ensure that any changes to the External Client App (such as certificate updates,
 
 ## What the Workflow Does
 
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 22, 'rankSpacing': 36}}}%%
+flowchart TD
+    A[GitHub Actions Trigger<br/>workflow_dispatch]
+    C[Install Dependencies]
+
+    subgraph auth [Authentication]
+        D[JWT Authentication to Salesforce Sandbox]
+    end
+
+    E[Retrieve Metadata<br/>force-app]
+    F{Update Steps}
+
+    F1[Deactivate Communities]
+    F2[Delete SAML SSO Configurations]
+    F3[Enable Salesforce Credentials Login]
+    F4[Set Max Login Attempts to 10]
+    F5[Disable Outlook Integration]
+    F6[Disable Identity Provider]
+    F7[Enable Lightning Experience S1 Banner]
+    F8[Deactivate Platform Events]
+    F9[Update Trusted Domains for iFrame]
+    F10[Disable Transaction Security Policies]
+    F11[Deactivate Box Trigger]
+    F12[Update Remote Site Settings]
+    F13[Deactivate SCA_Exceptions Flow]
+    F14[Update Email Relay Usernames to Non-Prod]
+    F15[Update Named Credential URLs to Non-Prod]
+    F16[Remove All Certificates]
+    F17[Uninstall the smarsh managed package]
+
+    G{Consolidate Metadata Deploy}
+    H[Generate Summary<br/>with ✅/❌ status]
+    I[Done - Sandbox is now safe & configured]
+
+    A --> C --> D --> E --> F
+
+    F --> F1 & F2 & F3 & F4 & F5 & F6 & F7 & F8 & F9 & F10 & F11 & F12 & F13 & F14 & F15 & F16 & F17
+    F1 & F2 & F3 & F4 & F5 & F6 & F7 & F8 & F9 & F10 & F11 & F12 & F13 & F14 & F15 & F16 & F17 --> G
+
+    G --> H --> I
+
+    style auth fill:#FFF9C4,stroke:#F9A825,color:#000
+```
+
+
 ### A) Environment Setup
 - Triggered via **GitHub Actions (`workflow_dispatch`)**
 - Installs required dependencies
@@ -265,50 +312,3 @@ After execution, the sandbox is:
 - ✅ Safe  
 - ✅ Cleaned  
 - ✅ Fully configured for non-production use  
-
----
-
-```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 22, 'rankSpacing': 36}}}%%
-flowchart TD
-    A[GitHub Actions Trigger<br/>workflow_dispatch]
-    C[Install Dependencies]
-
-    subgraph auth [Authentication]
-        D[JWT Authentication to Salesforce Sandbox]
-    end
-
-    E[Retrieve Metadata<br/>force-app]
-    F{Update Steps}
-
-    F1[Deactivate Communities]
-    F2[Delete SAML SSO Configurations]
-    F3[Enable Salesforce Credentials Login]
-    F4[Set Max Login Attempts to 10]
-    F5[Disable Outlook Integration]
-    F6[Disable Identity Provider]
-    F7[Enable Lightning Experience S1 Banner]
-    F8[Deactivate Platform Events]
-    F9[Update Trusted Domains for iFrame]
-    F10[Disable Transaction Security Policies]
-    F11[Deactivate Box Trigger]
-    F12[Update Remote Site Settings]
-    F13[Deactivate SCA_Exceptions Flow]
-    F14[Update Email Relay Usernames to Non-Prod]
-    F15[Update Named Credential URLs to Non-Prod]
-    F16[Remove All Certificates]
-    F17[Uninstall the smarsh managed package]
-
-    G{Consolidate Metadata Deploy}
-    H[Generate Summary<br/>with ✅/❌ status]
-    I[Done - Sandbox is now safe & configured]
-
-    A --> C --> D --> E --> F
-
-    F --> F1 & F2 & F3 & F4 & F5 & F6 & F7 & F8 & F9 & F10 & F11 & F12 & F13 & F14 & F15 & F16 & F17
-    F1 & F2 & F3 & F4 & F5 & F6 & F7 & F8 & F9 & F10 & F11 & F12 & F13 & F14 & F15 & F16 & F17 --> G
-
-    G --> H --> I
-
-    style auth fill:#FFF9C4,stroke:#F9A825,color:#000
-```
