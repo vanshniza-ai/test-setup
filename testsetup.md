@@ -16,13 +16,13 @@ flowchart LR
     C["eca/server.crt (public certificate in repo)"]
   end
 
-  subgraph Run["Actions runner"]
+  subgraph Run["Virtual Environment"]
     SF["Salesforce CLI (sf command)"]
   end
 
   subgraph SFDC["Salesforce Sandbox Org"]
     ECA["External Client App (JWT login)"]
-    ORG["Sandbox org (metadata & settings)"]
+    ORG["Sandbox Metadata & Settings"]
   end
 
   W --> SF
@@ -49,7 +49,7 @@ flowchart LR
 | `.github/workflows/post-refresh-configuration.yml` | Main workflow and orchestration layer for the sandbox post-refresh process. Handles environment setup (e.g., Node/CLI installation), Salesforce JWT authentication, validation steps, metadata retrieval and updates, API-based operations, deployment, and job summary generation. It also wires GitHub secrets and variables into steps, pins tool versions, and controls execution through conditional logic (e.g., `workflow_dispatch` inputs like `enable_sf_credentials`, `update_named_credentials`). |
 | `Scripts/NCupdated.js` | This javascript used after metadata retrieval (`force-app/main/default`). It scans for `*.namedCredential-meta.xml` files and updates endpoint URLs for both legacy and next-gen Named Credentials. Ensures production endpoints copied during sandbox refresh are replaced with non-production or pilot URLs. Supports configuration via GitHub variables/secrets such as `IGNORE_LIST` (to skip specific credentials) and `NAMED_CREDENTIALS_EXPLICIT_URLS` (explicit URL mappings). |
 | `eca/server.crt` | Public certificate used for Salesforce JWT authentication via External Client App (ECA). This certificate is uploaded to Salesforce ECA. The corresponding private key is kept securely as a GitHub secret (e.g., `SF_JWT_KEY`). |
-| *(GitHub Secrets & Variables)* | Used by the workflow for secure and dynamic configuration. Includes values such as `SF_CLIENT_ID` (consumer key from Salesforce ECA), `SF_USERNAME` (salesforce user with required permissions), `SF_JWT_KEY` (private key), and other configuration inputs like Named Credential mappings. Secrets must be securely maintained and never committed to the repository. |
+| *(GitHub Secrets & Variables)* | Used by the workflow for secure and dynamic configuration. Includes values such as `SF_CLIENT_ID` (consumer key from Salesforce ECA), `SF_USERNAME` (salesforce user with required permissions), `SF_JWT_KEY` (private key), and other configuration inputs like Named Credential mappings. |
 | *(Salesforce External Client App - ECA)* | Configured in Salesforce to enable JWT-based authentication. Requires uploading `server.crt`, enabling JWT Bearer Flow, configuring OAuth scopes, and authorizing the user. The consumer key is stored as a GitHub secret (`SF_CLIENT_ID`). Key rotation involves updating both the repository certificate and GitHub secret. <Add link for ECA and cert rotation> |
 
 ---
